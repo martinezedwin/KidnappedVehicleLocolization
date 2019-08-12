@@ -99,6 +99,32 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
+  for(int i=0; i<observations.size(); ++i){
+    //Will use the distance formula: distance = sqrt((x2-x1)^2 + (y2=y1)^2)
+
+    //Initial distacne to compare distance value calculated by distance formula and updated.
+    double previous_d=numeric<double>std::max();
+    double landmark_id=0; //initialize landmark number
+    //grab the observation point of interest x and y coordinates
+    double observation_x = observations[i].x;
+    double observation_y = observations[i].y;
+
+    //Will compare it to every predicted point x and y coordinates
+    for(int j=0; j<predicted.size(); ++j){
+      double predicted_x = predicted[j].x;
+      double predicted_y = predicted[j].y;
+
+      double sub1=observation_x-predicted_x; 
+      double sub2=observation_y-predicted_y; 
+      double d=sqrt(pow(sub1,2)+pow(sub2,2));
+
+      if(d<previous_d){
+        previous_d = d;                 //if we have a new closer prediction, set the distance to newest lowerst distance
+        landmark_id = predicted[j].id;  //and set the id to the corresponding predicted id
+      }
+    }
+    observations[i].id = landmark_id;   //set the final lowest distance id to the observed id.
+  }
 
 }
 
