@@ -64,6 +64,28 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
    *  http://www.cplusplus.com/reference/random/default_random_engine/
    */
+  for(int j=0; j<num_particles; ++j){
+    //Prevent dividing by zero (yaw rate)(Case: when going straight)
+    if(abs(yaw_rate<0.001)){
+      p[j].x=p[j].x+(velocity*delta_t*cos(p.theta));
+      p[j].y=p[j].y+(velocity*delta_t*sin(p.theta));
+      p[j].theta= p[j].theta;
+    } else{
+      //Case: turning
+      p[j].x=p[j].x+((velocity/yaw_rate)*(sin(p.[j].theta+(yaw_rate*delta_t))-sin(p.[j].theta)));
+      p[j].y=p[j].y+((velocity/yaw_rate)*(cos(p.[j].theta)-cos(p.[j].theta+(yaw_rate*delta_t))));
+      p[j].theta=p[j].theta+(yaw_rate*delta_t);
+    }
+    //Adding noise
+    normal_distribution<double> dist_x(p[j].x, std_pos[0]);
+    normal_distribution<double> dist_y(p[j].y, std_pos[1]);
+    normal_distribution<double> dist_theta(p[j].theta, std_pos[2]);
+
+    p[j].x=dist_x(gen);
+    p[j].y=dist_x(gen);
+    p[j].x=dist_x(gen);
+
+  }
 
 }
 
