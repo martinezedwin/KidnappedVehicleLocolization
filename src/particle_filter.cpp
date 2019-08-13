@@ -234,6 +234,35 @@ void ParticleFilter::resample() {
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
 
+  vector<Particles> resampled_particles;
+
+  vector<double> weights;
+  for(int i =0; i<num_particles; ++i){
+    weights.push_back(particles[i].weights);
+  }
+
+  //random particle index
+  uniform_index_dist<int> particle_index(0, num_particles-1);
+  default_random_engine gen;
+
+  double beta = 0.0;
+
+  double max_weight = 2.0 * *max_element(weights.begin(), weights.end());
+
+  int index = particle_index(gen);
+
+  for(int i=0; i<num_particles.size(); ++i){
+    uniform_dist<double> random_weight(0.0, max_weight);
+    beta= beta+random_weight(gen);
+
+    while(weights[index]<beta){
+      beta=beta-weights[index];
+      index=index+1;
+    }
+    resampled_particles.push_back(particles[index]);
+  }  
+  particles = resampled_particles;
+
 }
 
 void ParticleFilter::SetAssociations(Particle& particle, 
@@ -245,6 +274,12 @@ void ParticleFilter::SetAssociations(Particle& particle,
   // associations: The landmark id that goes along with each listed association
   // sense_x: the associations x mapping already converted to world coordinates
   // sense_y: the associations y mapping already converted to world coordinates
+
+  particle.associations.clear();
+  particle.sense_x.clear();
+  particle.sense_y.clear();
+  
+
   particle.associations= associations;
   particle.sense_x = sense_x;
   particle.sense_y = sense_y;
