@@ -143,8 +143,87 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    *   https://www.willamette.edu/~gorr/classes/GeneralGraphics/Transforms/transforms2d.htm
    *   and the following is a good resource for the actual equation to implement
    *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
+
+      Strategy:
+        Step1: Convert observations landmarks from car to map coordinates
+        Step2: Only use landmarks within sensor range
+        Step3: Use kept landmarks in nearest neighboor dataAssociation
+        Step4: Calculate the new weights of each partcle
+        Step5: Update weights
    */
 
+  double sig_x = std_landmark[0];
+  double sig_y = std_landmark[1];
+
+  for(int i=0; i<num_particles; ++i){
+    //particles coordinates in map coordinates
+    double particle_x=particles[i].x;
+    double particle_y=particles[i].y;
+    double particle_theta=particles[i].theta;
+
+    vector<LandmarkObs> landmarksInRange; //vector that will contain the landmarks in range
+
+    for(unsigned int k=0; k<map_landmarks.landmarks_list.size(); ++k){
+      int landmark_id=map_landmarks[k].id_i;
+      double landmark_x=map_landmarks[k].x_f;
+      double landmark_y=map_landmarks[k].y_f;
+
+      double d=dist(particle_x, particle_y, landmark_x, landmark_y);
+
+      if(d<sensor_range){
+        LandmarkObs landmark;
+        landmark.id = landmark_id;
+        landmark.x = landmark_x;
+        landmark.y = landmark_y;
+        landmarksInRange.push_back(landmark);
+      }
+    }
+
+    vector<LandmarkObs> transformedObs; //vector to contained transformed observations from car to map coordinates
+
+    for(int j=0; j<observations.size(); ++j){
+      LandmarkObs transformed_observations;
+      transformed_observations.id = j;
+      transformed_observations.x = (observations[j].x*cos(particle_theta))-(observations[j].y*sin(particle_theta)) + particle_x;
+      transformed_observations.y = (observations[j].x*sin(particle_theta))+(observations[j].y*cos(particle_theta)) + particle_y;
+      transformedObs.push_back(transformed_observations);
+    }
+
+    //Use nearest neighbor on landmarks in range to associate with observations in the map coordinates
+    dataAssociation(landmarksInRange, transformed_observations);
+
+    //Calculate weight of each particle
+    particles[i].weight=1.0;
+
+    gauss_norm = 1/(2*M_PI*sig_x*sig_y);
+
+    for(int l=0; l<transformed_observations.size(); ++l){
+      double multi_porbability;
+
+      double x_obs = transformed_observations[l].x;
+      double y_obs = transformed_observations[l].y;
+
+      for(int m=0; m<landmarksInRange.size(); ++m){
+        if(transformed_observations[l].id == landmarksInRange[m].id){
+          mu_x = landmarksInRange.x; //coordinates of neerest landmark
+          mu_y = landmarksInRange.y; //coordinates of neerest landmark
+
+          double exponent;
+          exponent = (pow(x_obs - mu_x, 2) / (2 * pow(sig_x, 2)))
+               + (pow(y_obs - mu_y, 2) / (2 * pow(sig_y, 2)));
+
+          multi_porbability = gauss_norm * exp(-exponent);
+          particles[i].weight *= multi_porbability;
+
+        }
+      }
+    }
+    weight_normalizer += particles[i].weight
+  }
+  for(int i=0; i<particles.size(); ++i){
+    particles[i].weight/=weight_normalizer;
+    weight[i]=particles[i].weight;
+  }
 }
 
 void ParticleFilter::resample() {
