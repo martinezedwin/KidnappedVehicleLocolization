@@ -39,10 +39,14 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    *   from GPS) and all weights to 1. 
    assuming std[] -> std[std_x, std_y, std_theta]
   */
+
+  //Creates normal Gaussian distribution for x, y, and theta
   normal_distribution<double> dist_x(x, std[0]);
   normal_distribution<double> dist_y(y, std[1]);
   normal_distribution<double> dist_theta(theta, std[2]);
 
+  //For every particle filter, assign an id, x, y, theta, and weight and add them
+  //to the particles 
   for(int i=0; i<num_particles; ++i){
     Particle p;
     p.id=i;
@@ -54,7 +58,8 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
 
     particles.push_back(p);
   }
-  is_initialized=true;
+  std::cout<<"Number of particles: "<<particles.size();
+  is_initialized=true; //set initialization to done (true)
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
