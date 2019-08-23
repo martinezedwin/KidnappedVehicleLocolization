@@ -48,18 +48,19 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   //For every particle filter, assign an id, x, y, theta, and weight and add them
   //to the particles 
   for(int i=0; i<num_particles; ++i){
-    Particle p;
-    p.id=i;
-    //sample from the normal distributions using gen
-    p.x=dist_x(gen);
-    p.y=dist_y(gen);
-    p.theta=dist_theta(gen);
-    p.weight=1.0;
+    Particle p;                //Initialize particle p to type Particle
+    p.id=i;                    //set the id of the particle to the particle number as it was created starting at id=0
+    std::cout<<"particle id: "<<i<<std::endl;
+    //sample from the normal distributions using gen using the provided gps data (x, y, theta, std)
+    p.x=dist_x(gen);           //set x coordinate for this particle randomly in (map coordinates? Probably)
+    p.y=dist_y(gen);           //set y coordinate for this particle randomly in (map coordinates? Probably)
+    p.theta=dist_theta(gen);   //set theta for this particle randomly in (map coordinates? Probably)
+    p.weight=1.0;              //set every particle weight to 1.0
 
-    particles.push_back(p);
+    particles.push_back(p);    //add the partcile to the Particle type vector "particles"
   }
-  std::cout<<"Number of particles: "<<particles.size();
-  is_initialized=true; //set initialization to done (true)
+  std::cout<<"Number of particles: "<<particles.size()<<std::endl;
+  is_initialized=true;         //set initialization to done (true)
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
