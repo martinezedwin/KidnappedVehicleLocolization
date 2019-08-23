@@ -113,7 +113,10 @@ int main() {
           }
 
           // Update the weights and resample
+          std::cout<<"Start updatea weights......from main.cpp"<<std::endl;
           pf.updateWeights(sensor_range, sigma_landmark, noisy_observations, map);
+
+          std::cout<<"Start resample......from main.cpp"<<std::endl;
           pf.resample();
 
           // Calculate and output the average weighted error of the particle 

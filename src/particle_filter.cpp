@@ -50,7 +50,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   for(int i=0; i<num_particles; ++i){
     Particle p;                //Initialize particle p to type Particle
     p.id=i;                    //set the id of the particle to the particle number as it was created starting at id=0
-    std::cout<<"particle id: "<<i<<std::endl;
+    //std::cout<<"particle id: "<<i<<std::endl;
     //sample from the normal distributions using gen using the provided gps data (x, y, theta, std)
     p.x=dist_x(gen);           //set x coordinate for this particle randomly in (map coordinates? Probably)
     p.y=dist_y(gen);           //set y coordinate for this particle randomly in (map coordinates? Probably)
@@ -168,23 +168,34 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         Step5: Update weights
    */
 
-  double sig_x = std_landmark[0];
-  double sig_y = std_landmark[1];
+  double sig_x = std_landmark[0];           //set the std of x to sig_x
+  std::cout<<"sig_x: "<<sig_x<<std::endl;
+  double sig_y = std_landmark[1];           //set the std of y to sig_y
+  std::cout<<"sig_y: "<<sig_y<<std::endl;
 
-  double weight_normalizer;
+  double weight_normalizer;                 //Set type of weight_normalizer
 
+
+  //For every particle converting particle coordinate
   for(int i=0; i<num_particles; ++i){
+    std::cout<<"particle id: "<<i<<std::endl;
     //particles coordinates in map coordinates
     double particle_x=particles[i].x;
     double particle_y=particles[i].y;
     double particle_theta=particles[i].theta;
 
+    std::cout<<"particle (x, y, theta): "<<particle_x<<" "<<particle_y<<" "<<particle_theta<<std::endl;
+
     vector<LandmarkObs> landmarksInRange; //vector that will contain the landmarks in range
 
     for(unsigned int k=0; k<map_landmarks.landmark_list.size(); ++k){
+      std::cout<<"map landmark "<<k<<std::endl;
+
       int landmark_id=map_landmarks.landmark_list[k].id_i;
       double landmark_x=map_landmarks.landmark_list[k].x_f;
       double landmark_y=map_landmarks.landmark_list[k].y_f;
+
+      std::cout<<"particle (landmark id, landmark_x, landmark_y): "<<landmark_id<<" "<<landmark_x<<" "<<landmark_y<<std::endl;
 
       double d=dist(particle_x, particle_y, landmark_x, landmark_y);
 
