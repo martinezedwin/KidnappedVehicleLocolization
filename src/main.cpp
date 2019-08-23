@@ -68,11 +68,16 @@ int main() {
             double sense_x = std::stod(j[1]["sense_x"].get<string>());
             double sense_y = std::stod(j[1]["sense_y"].get<string>());
             double sense_theta = std::stod(j[1]["sense_theta"].get<string>());
+            
+            std::cout<<"Not initialized......from main.cpp"<<std::endl;
 
             pf.init(sense_x, sense_y, sense_theta, sigma_pos);
+
           } else {
             // Predict the vehicle's next state from previous 
             //   (noiseless control) data.
+            std::cout<<"Initialized......from main.cpp"<<std::endl;
+
             double previous_velocity = std::stod(j[1]["previous_velocity"].get<string>());
             double previous_yawrate = std::stod(j[1]["previous_yawrate"].get<string>());
 

@@ -61,6 +61,8 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   }
   std::cout<<"Number of particles: "<<particles.size()<<std::endl;
   is_initialized=true;         //set initialization to done (true)
+
+  std::cout<<"Initialization complete!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
 }
 
 void ParticleFilter::prediction(double delta_t, double std_pos[], 
@@ -72,14 +74,20 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
    *  http://www.cplusplus.com/reference/random/default_random_engine/
    */
+
+  //For every particle, update x, y, and yaw angle using the prediciton bicycle model
+  std::cout<<"Starting prediction"<<std::endl;
   for(int j=0; j<num_particles; ++j){
+    std::cout<<"Particle: "<<j<<std::endl;
     //Prevent dividing by zero (yaw rate)(Case: when going straight)
     if(abs(yaw_rate<0.001)){
+      std::cout<<"Going straight"<<std::endl;
       particles[j].x=particles[j].x+(velocity*delta_t*cos(particles[j].theta));
       particles[j].y=particles[j].y+(velocity*delta_t*sin(particles[j].theta));
       particles[j].theta= particles[j].theta;
     } else{
       //Case: turning
+      std::cout<<"Turning"<<std::endl;
       particles[j].x=particles[j].x+((velocity/yaw_rate)*(sin(particles[j].theta+(yaw_rate*delta_t))-sin(particles[j].theta)));
       particles[j].y=particles[j].y+((velocity/yaw_rate)*(cos(particles[j].theta)-cos(particles[j].theta+(yaw_rate*delta_t))));
       particles[j].theta=particles[j].theta+(yaw_rate*delta_t);
@@ -94,7 +102,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
     particles[j].x=dist_x(gen);
 
   }
-
+  std::cout<<"Prediction complete!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
 }
 
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, 
