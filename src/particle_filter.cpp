@@ -115,13 +115,15 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
    *   probably find it useful to implement this method and use it as a helper 
    *   during the updateWeights phase.
    */
+  //std::cout<<"STARTING DATA ASSOCIATION!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
+
   for(int i=0; i<observations.size(); ++i){
     //Will use the distance formula: distance = sqrt((x2-x1)^2 + (y2=y1)^2)
 
     //Initial distacne to compare distance value calculated by distance formula and updated.
-    double previous_d=numeric_limits<double>::max();
-    double landmark_id=0; //initialize landmark number
-    //grab the observation point of interest x and y coordinates
+    double previous_d=numeric_limits<double>::max();              //Initialize previous d to super high number initially
+    double landmark_id=0;                                         //initialize landmark number
+    //grab the observation point of interest x and y coordinates (Should be in map coordinates now)
     double observation_x = observations[i].x;
     double observation_y = observations[i].y;
 
@@ -130,9 +132,7 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
       double predicted_x = predicted[j].x;
       double predicted_y = predicted[j].y;
 
-      double sub1=observation_x-predicted_x; 
-      double sub2=observation_y-predicted_y; 
-      double d=sqrt(pow(sub1,2)+pow(sub2,2));
+      double d=dist(observation_x, observation_y, predicted_x, predicted_y);
 
       if(d<previous_d){
         previous_d = d;                 //if we have a new closer prediction, set the distance to newest lowerst distance
@@ -140,8 +140,9 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
       }
     }
     observations[i].id = landmark_id;   //set the final lowest distance id to the observed id.
+    //std::cout<<"New Observation IDs: "<<observations[i].id<<std::endl;
   }
-
+  std::cout<<"ENDING DATA ASSOCIATION!!!!!!!!!!!!!!!!!!!!!!!!!!"<<std::endl;
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
@@ -175,36 +176,43 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
   double weight_normalizer;                 //Set type of weight_normalizer
 
+  //Numper of landmarks
+  //std::cout<<"Number of total landmarks: "<<map_landmarks.landmark_list.size()<<std::endl;
 
-  //For every particle converting particle coordinate
+  
   for(int i=0; i<num_particles; ++i){
-    std::cout<<"particle id: "<<i<<std::endl;
+    //std::cout<<"particle id: "<<i<<std::endl;
     //particles coordinates in map coordinates
     double particle_x=particles[i].x;
     double particle_y=particles[i].y;
     double particle_theta=particles[i].theta;
 
-    std::cout<<"particle (x, y, theta): "<<particle_x<<" "<<particle_y<<" "<<particle_theta<<std::endl;
+    //std::cout<<"------particle (x, y, theta): "<<particle_x<<" "<<particle_y<<" "<<particle_theta<<std::endl;
 
     vector<LandmarkObs> landmarksInRange; //vector that will contain the landmarks in range
 
+
     for(unsigned int k=0; k<map_landmarks.landmark_list.size(); ++k){
-      std::cout<<"map landmark "<<k<<std::endl;
+      //std::cout<<"------map landmark "<<k<<std::endl;
 
       int landmark_id=map_landmarks.landmark_list[k].id_i;
       double landmark_x=map_landmarks.landmark_list[k].x_f;
       double landmark_y=map_landmarks.landmark_list[k].y_f;
 
-      std::cout<<"particle (landmark id, landmark_x, landmark_y): "<<landmark_id<<" "<<landmark_x<<" "<<landmark_y<<std::endl;
+      //std::cout<<"------landmark (landmark id, landmark_x, landmark_y): "<<landmark_id<<" "<<landmark_x<<" "<<landmark_y<<std::endl;
 
       double d=dist(particle_x, particle_y, landmark_x, landmark_y);
+      
+      //std::cout<<"------distance calculated between particle and lanmark 'd' vs. sensor range: "<<d<<" vs. "<<sensor_range<<std::endl;      
 
-      if(d<sensor_range){
+      if(d<=sensor_range){
         LandmarkObs landmark;
         landmark.id = landmark_id;
+        //std::cout<<"Landmark within sensor range: "<<landmark.id<<std::endl;
         landmark.x = landmark_x;
         landmark.y = landmark_y;
         landmarksInRange.push_back(landmark);
+        //std::cout<<"Length of landmarks in range "<<landmarksInRange.size()<<std::endl;
       }
     }
 
@@ -219,8 +227,13 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     }
 
     //Use nearest neighbor on landmarks in range to associate with observations in the map coordinates
+    //std::cout<<"Before data Association observations IDs: "<<
     dataAssociation(landmarksInRange, transformedObs);
 
+    //for(int n=0; n<transformedObs.size(); ++n){
+    //  std::cout<<"After: "<<transformedObs[n].id<<std::endl;
+    //}
+    
     //Calculate weight of each particle
     particles[i].weight=1.0;
 
@@ -247,12 +260,13 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         }
       }
     }
-    weight_normalizer += particles[i].weight;
+    //weight_normalizer += particles[i].weight;
   }
-  for(int i=0; i<particles.size(); ++i){
-    particles[i].weight/=weight_normalizer;
-    weights[i]=particles[i].weight;
-  }
+  //for(int i=0; i<particles.size(); ++i){
+  //  particles[i].weight/=weight_normalizer;
+  //  weights[i]=particles[i].weight;
+  //}
+  std::cout<<"ENED OF UPDATE WEIGHTS!!!"<<std::endl;
 }
 
 void ParticleFilter::resample() {
@@ -262,7 +276,7 @@ void ParticleFilter::resample() {
    * NOTE: You may find std::discrete_distribution helpful here.
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
-
+  std::cout<<"Resample"<<std::endl;
   vector<Particle> resampled_particles;
 
   vector<double> weights;
