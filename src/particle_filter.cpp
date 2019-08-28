@@ -162,15 +162,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
    *   https://www.willamette.edu/~gorr/classes/GeneralGraphics/Transforms/transforms2d.htm
    *   and the following is a good resource for the actual equation to implement
    *   (look at equation 3.33) http://planning.cs.uiuc.edu/node99.html
+  **/
 
-      Strategy:
-        Step1: Convert observations landmarks from car to map coordinates
-        Step2: Only use landmarks within sensor range
-        Step3: Use kept landmarks in nearest neighboor dataAssociation
-        Step4: Calculate the new weights of each partcle
-        Step5: Update weights
-        */
-        
   double sig_x = std_landmark[0];           //set the std of x to sig_x
   //std::cout<<"sig_x: "<<sig_x<<std::endl;
   double sig_y = std_landmark[1];           //set the std of y to sig_y
@@ -257,8 +250,8 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
 
           double inExponent = ((pow(x_obs - mu_x, 2) / (2 * pow(sig_x, 2)))
                + (pow(y_obs - mu_y, 2) / (2 * pow(sig_y, 2))));
-          std::cout<<"inExponent: "<<inExponent<<std::endl;
-          std::cout<<"Exponenet: "<<exp(-inExponent)<<std::endl;
+          //std::cout<<"inExponent: "<<inExponent<<std::endl;
+          //std::cout<<"Exponenet: "<<exp(-inExponent)<<std::endl;
           multi_porbability = gauss_norm * exp(-inExponent);
         }//End of finding mathc
       }//End of going through each lanmark in range
@@ -278,7 +271,6 @@ void ParticleFilter::resample() {
    * NOTE: You may find std::discrete_distribution helpful here.
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
-  
   vector<Particle> resampled_particles;
 
   vector<double> weights;
@@ -319,11 +311,6 @@ void ParticleFilter::SetAssociations(Particle& particle,
   // associations: The landmark id that goes along with each listed association
   // sense_x: the associations x mapping already converted to world coordinates
   // sense_y: the associations y mapping already converted to world coordinates
-
-  //particle.associations.clear();
-  //particle.sense_x.clear();
-  //particle.sense_y.clear();
-  
 
   particle.associations= associations;
   particle.sense_x = sense_x;
