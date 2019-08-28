@@ -39,7 +39,7 @@ You can find the inputs to the particle filter in the `data` directory.
 > * Map data provided by 3D Mapping Solutions GmbH.
 
 
-##Accuracy:
+## Accuracy:
 
 | Dimension     | Error	 |
 |---------------|--------|
@@ -48,7 +48,7 @@ You can find the inputs to the particle filter in the `data` directory.
 |yaw            | 0.004  |
 
 
-##Performance:
+## Performance:
 
 | Stats         | Performance    |
 |---------------|----------------|
