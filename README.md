@@ -50,11 +50,12 @@ You can find the inputs to the particle filter in the `data` directory.
 
 ##Performance:
 
+| Stats         | Performance    |
 |---------------|----------------|
 |Time to finish | 48.88 seconds  |
 |Time steps     | 2,443.00       |
 
 
-You can see a video of how it works when it is ran in the simulator:
+You can see a video of how it works when it is ran in the simulator!!!!!!!!!!!!!!!!!!!!!!!:
 
 [![Final result video](./Success_kidnapped_vehicle_project.jpg)](https://www.youtube.com/watch?v=-RZSj1V07jE)
