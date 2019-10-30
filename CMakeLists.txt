@@ -1,32 +1,53 @@
-project(PARTICLE_FILTER)
+cmake_minimum_required(VERSION 2.8.3)
+project(dbw_mkz_msgs)
 
-cmake_minimum_required (VERSION 3.5)
+find_package(catkin REQUIRED COMPONENTS
+  message_generation
+  std_msgs
+  geometry_msgs
+)
 
-add_definitions(-std=c++11)
+add_message_files(DIRECTORY msg FILES
+  AmbientLight.msg
+  BrakeCmd.msg
+  BrakeInfoReport.msg
+  BrakeReport.msg
+  FuelLevelReport.msg
+  Gear.msg
+  GearCmd.msg
+  GearReject.msg
+  GearReport.msg
+  HillStartAssist.msg
+  Misc1Report.msg
+  ParkingBrake.msg
+  SteeringCmd.msg
+  SteeringReport.msg
+  SurroundReport.msg
+  ThrottleCmd.msg
+  ThrottleInfoReport.msg
+  ThrottleReport.msg
+  TirePressureReport.msg
+  TurnSignal.msg
+  TurnSignalCmd.msg
+  TwistCmd.msg
+  WatchdogCounter.msg
+  WheelPositionReport.msg
+  WheelSpeedReport.msg
+  Wiper.msg
+)
 
-set(CXX_FLAGS "-Wall")
-set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
+generate_messages(DEPENDENCIES
+  std_msgs
+  geometry_msgs
+)
 
-file(GLOB HEADERS src/*.h)
-file(GLOB HEADERS_HPP src/*.hpp)
+catkin_package(CATKIN_DEPENDS
+  message_runtime
+  std_msgs
+  geometry_msgs
+)
 
-set(sources src/particle_filter.cpp src/main.cpp ${HEADERS} ${HEADERS_HPP})
-
-
-
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
-
-include_directories(/usr/local/include)
-include_directories(/usr/local/opt/openssl/include)
-link_directories(/usr/local/lib)
-link_directories(/usr/local/opt/openssl/lib)
-link_directories(/usr/local/Cellar/libuv/1*/lib)
-
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
-
-
-add_executable(particle_filter ${sources})
-
-
-target_link_libraries(particle_filter z ssl uv uWS)
-
+install(DIRECTORY bmr
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        FILES_MATCHING PATTERN "*.bmr"
+)
